@@ -23,8 +23,21 @@ const addTodo = () => {
 
   if( input_category.value === null) {
     alert("Please select a category")
+  } else {
+    todos.value.push({
+      content: input_content.value,
+      category: input_category.value,
+      done: false,
+      createdAt: new Date().getTime()
+    })
   }
+
+
 };
+//  ddep looks through everything and watches for changes
+watch(todos, newVal => {
+  localStorage.setItem('todos', JSON.stringify(newVal))
+}, {deep: true})
 
 // watching to set name
 watch(name, (newVal) => {
@@ -34,6 +47,7 @@ watch(name, (newVal) => {
 // pulling name from local storage
 onMounted(() => {
   name.value = localStorage.getItem("name") || "";
+  todos.value = JSON.parse(localStorage.getItem('todos')) || []
 });
 </script>
 
@@ -85,6 +99,23 @@ onMounted(() => {
 
         <input type="submit" value="Add todo">
       </form>
+    </section>
+
+    <section class="todo-list">
+      <h3>TODO LIST</h3>
+      <div class="list">
+
+        <div v-for="todo in todos_asc" :class="`todo-item ${todo.done && 'done'}`">
+          <label>
+            <input type="checkbox" v-model="todo.done" />
+            <span :class="`bubble ${todo.category}`"></span>
+          </label>
+          <div class="todo-content">
+            <input type="text" v-model="todo.content" />
+          </div>
+        </div>
+
+      </div>
     </section>
   </main>
 </template>
